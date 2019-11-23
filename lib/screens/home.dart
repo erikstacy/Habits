@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
             itemCount: 5,
             itemBuilder: (context, index) {
               return Container(
+                padding: EdgeInsets.all(15),
                 margin: EdgeInsets.symmetric(vertical: 80, horizontal: 10),
                 width: 350,
                 decoration: BoxDecoration(
@@ -50,7 +51,55 @@ class _HomePageState extends State<HomePage> {
                     spreadRadius: 0.0,
                   )],
                 ),
-                child: Text('Yo mama'),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Test Category',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          bool currentValue = false;
+                          return Row(
+                            children: <Widget>[
+                              Checkbox(
+                                value: currentValue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    currentValue = newValue;
+                                  });
+                                },
+                              ),
+                              Text(
+                                'Testing',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -68,17 +117,24 @@ class _HomePageState extends State<HomePage> {
               onPressed: () => showModalBottomSheet(
                 context: context,
                 builder: (context) => Drawer(
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.search),
-                        title: Text('Search'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.mail),
-                        title: Text('Mail'),
-                      ),
-                    ],
+                  child: Container(
+                    color: Color(0xFF2d3447),
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(
+                            Icons.exit_to_app,
+                            color: Colors.white,
+                          ),
+                          title: Text(
+                            'Sign Out',
+                            style: TextStyle(
+                              color: Colors.white
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
