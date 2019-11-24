@@ -69,26 +69,6 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                           onPressed: () async {
-                            await showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  backgroundColor: Color(0xFF2d3447),
-                                  title: Text(
-                                    'Edit',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  content: TextField(
-                                    maxLines: null,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
                           },
                         ),
                       ],
