@@ -68,7 +68,28 @@ class _HomePageState extends State<HomePage> {
                             Icons.add,
                             color: Colors.white,
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: Color(0xFF2d3447),
+                                  title: Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  content: TextField(
+                                    maxLines: null,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -153,7 +174,8 @@ class _HomePageState extends State<HomePage> {
         child: Icon(
           Icons.add,
         ),
-        onPressed: () {},
+        onPressed: () {
+        },
       ),
     );
   }
