@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:habits_app/services/services.dart';
 import 'package:provider/provider.dart';
@@ -41,9 +42,40 @@ class _HomeScreenState extends State<HomeScreen> {
           Icons.add,
         ),
         onPressed: () {
+          addCategory();
         },
       ),
     );
+  }
+
+  void addCategory() async {
+  UserProfile userProfile = Provider.of<UserProfile>(context);
+    TextEditingController _categoryController = new TextEditingController();
+    _categoryController.text = "";
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Add Habit"),
+          content: TextField(
+            controller: _categoryController,
+          ),
+        );
+      },
+    );
+
+    if (_categoryController.text != "") {
+      Firestore.instance
+        .collection('users')
+        .document(userProfile.uid)
+        .collection('categories')
+        .add(
+          {
+            'title': _categoryController.text,
+          }
+        );
+    }
   }
 }
 
@@ -195,11 +227,16 @@ class _CategoryListState extends State<CategoryList> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        document['title'],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+                      GestureDetector(
+                        onTap: () {
+                          editCategory(context, userProfile.uid, document.documentID, document['title']);
+                        },
+                        child: Text(
+                          document['title'],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -208,6 +245,7 @@ class _CategoryListState extends State<CategoryList> {
                           color: Colors.white,
                         ),
                         onPressed: () {
+                          addHabit(context, userProfile.uid, document.documentID);
                         },
                       ),
                     ],
@@ -222,6 +260,88 @@ class _CategoryListState extends State<CategoryList> {
         );
       },
     );
+  }
+
+  void editCategory(context, uid, categoryId, title) async {
+    TextEditingController _categoryController = new TextEditingController();
+    _categoryController.text = title;
+    bool deleted = false;
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit Habit"),
+          content: TextField(
+            controller: _categoryController,
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.delete,
+              ),
+              onPressed: () {
+                Firestore.instance
+                  .collection('users')
+                  .document(uid)
+                  .collection('categories')
+                  .document(categoryId)
+                  .delete();
+
+                deleted = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
+
+    if (_categoryController.text != title && deleted == false) {
+      Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('categories')
+        .document(categoryId)
+        .setData(
+          {
+            'title': _categoryController.text,
+          },
+          merge: true,
+        );
+    }
+  }
+
+  void addHabit(context, uid, categoryId) async {
+    TextEditingController _habitController = new TextEditingController();
+    _habitController.text = "";
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Add Habit"),
+          content: TextField(
+            controller: _habitController,
+          ),
+        );
+      },
+    );
+
+    if (_habitController.text != "") {
+      Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('categories')
+        .document(categoryId)
+        .collection('habits')
+        .add(
+          {
+            'title': _habitController.text,
+            'isDone': false,
+          }
+        );
+    }
   }
 }
 
@@ -261,10 +381,15 @@ class _HabitListState extends State<HabitList> {
                       );
                     },
                   ),
-                  Text(
-                    document['title'],
-                    style: TextStyle(
-                      color: Colors.white
+                  GestureDetector(
+                    onTap: () {
+                      editHabit(context, document.documentID, userProfile.uid, widget.currentDoc, document['title']);
+                    },
+                    child: Text(
+                      document['title'],
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
                     ),
                   ),
                 ],
@@ -274,5 +399,59 @@ class _HabitListState extends State<HabitList> {
         }
       ),
     );
+  }
+
+  void editHabit (context, docId, uid, currentDoc, title) async {
+    TextEditingController _habitController = new TextEditingController();
+    _habitController.text = title;
+    bool deleted = false;
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit Habit"),
+          content: TextField(
+            controller: _habitController,
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.delete,
+              ),
+              onPressed: () {
+                Firestore.instance
+                  .collection('users')
+                  .document(uid)
+                  .collection('categories')
+                  .document(currentDoc)
+                  .collection('habits')
+                  .document(docId)
+                  .delete();
+
+                deleted = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
+
+    if (_habitController.text != title && deleted == false) {
+      Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('categories')
+        .document(currentDoc)
+        .collection('habits')
+        .document(docId)
+        .setData(
+          {
+            'title': _habitController.text,
+          },
+          merge: true,
+        );
+    }
   }
 }
